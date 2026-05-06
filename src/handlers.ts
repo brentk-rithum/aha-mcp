@@ -9,12 +9,21 @@ import {
   RequirementResponse,
   PageResponse,
   SearchResponse,
+  IdeaAttributes,
+  SearchIdeasResponse,
+  GetIdeaResponse,
+  UpdateIdeaResponse,
+  CreateIdeaCommentResponse,
 } from "./types.js";
 import {
   getFeatureQuery,
   getRequirementQuery,
   getPageQuery,
   searchDocumentsQuery,
+  searchIdeasQuery,
+  getIdeaQuery,
+  updateIdeaMutation,
+  createIdeaCommentMutation,
 } from "./queries.js";
 
 export class Handlers {
@@ -186,6 +195,209 @@ export class Handlers {
       throw new McpError(
         ErrorCode.InternalError,
         `Failed to search documents: ${errorMessage}`
+      );
+    }
+  }
+
+  async handleSearchIdeas(request: any) {
+    const { query, workflowStatus, updatedSince } = request.params.arguments as {
+      query?: string;
+      workflowStatus?: string;
+      updatedSince?: string;
+    };
+
+    try {
+      const data = await this.client.request<SearchIdeasResponse>(
+        searchIdeasQuery,
+        { query, updatedSince }
+      );
+
+      let ideas = data.ideas.nodes;
+
+      // Client-side filter by workflow status name (API requires ID, we filter by name)
+      if (workflowStatus) {
+        const statusLower = workflowStatus.toLowerCase();
+        ideas = ideas.filter(
+          (idea) => idea.workflowStatus?.name?.toLowerCase() === statusLower
+        );
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ ...data.ideas, nodes: ideas }, null, 2),
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof McpError) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(
+        ErrorCode.InternalError,
+        `Failed to search ideas: ${errorMessage}`
+      );
+    }
+  }
+
+  async handleGetIdea(request: any) {
+    const { reference } = request.params.arguments as { reference: string };
+
+    if (!reference) {
+      throw new McpError(ErrorCode.InvalidParams, "Idea reference is required");
+    }
+
+    try {
+      const data = await this.client.request<GetIdeaResponse>(getIdeaQuery, {
+        id: reference,
+      });
+
+      if (!data.idea) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No idea found for reference ${reference}`,
+            },
+          ],
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(data.idea, null, 2),
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof McpError) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(
+        ErrorCode.InternalError,
+        `Failed to fetch idea: ${errorMessage}`
+      );
+    }
+  }
+
+  async handleUpdateIdea(request: any) {
+    const { id, fields } = request.params.arguments as {
+      id: string;
+      fields: IdeaAttributes;
+    };
+
+    if (!id) {
+      throw new McpError(ErrorCode.InvalidParams, "Idea ID is required");
+    }
+
+    if (!fields || Object.keys(fields).length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "At least one field to update is required"
+      );
+    }
+
+    try {
+      const data = await this.client.request<UpdateIdeaResponse>(
+        updateIdeaMutation,
+        { id, idea: fields }
+      );
+
+      if (data.updateIdea.errors.length > 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Update failed: ${data.updateIdea.errors.map((e) => e.message).join(", ")}`,
+            },
+          ],
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(data.updateIdea.idea, null, 2),
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof McpError) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(
+        ErrorCode.InternalError,
+        `Failed to update idea: ${errorMessage}`
+      );
+    }
+  }
+
+  async handlePostIdeaComment(request: any) {
+    const { ideaId, body } = request.params.arguments as {
+      ideaId: string;
+      body: string;
+    };
+
+    if (!ideaId) {
+      throw new McpError(ErrorCode.InvalidParams, "Idea ID is required");
+    }
+
+    if (!body) {
+      throw new McpError(ErrorCode.InvalidParams, "Comment body is required");
+    }
+
+    try {
+      const data = await this.client.request<CreateIdeaCommentResponse>(
+        createIdeaCommentMutation,
+        { ideaId, body }
+      );
+
+      if (data.createIdeaComment.errors.length > 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Comment failed: ${data.createIdeaComment.errors.map((e) => e.message).join(", ")}`,
+            },
+          ],
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(data.createIdeaComment.ideaComment, null, 2),
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof McpError) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(
+        ErrorCode.InternalError,
+        `Failed to post comment: ${errorMessage}`
       );
     }
   }

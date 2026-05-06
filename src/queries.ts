@@ -55,3 +55,78 @@ export const searchDocumentsQuery = `
     }
   }
 `;
+
+export const searchIdeasQuery = `
+  query SearchIdeas($query: String, $updatedSince: String) {
+    ideas(filters: { query: $query, updatedSince: $updatedSince }) {
+      nodes {
+        id
+        referenceNum
+        name
+        description { htmlBody }
+        workflowStatus { name }
+        score
+        endorsementsCount
+        createdAt
+        updatedAt
+        url
+        project { name referencePrefix }
+        tags
+        customFields { key name value }
+      }
+      currentPage
+      totalCount
+      totalPages
+      isLastPage
+    }
+  }
+`;
+
+export const getIdeaQuery = `
+  query GetIdea($id: ID!) {
+    idea(id: $id) {
+      id
+      referenceNum
+      name
+      description { htmlBody }
+      workflowStatus { name }
+      score
+      endorsementsCount
+      createdAt
+      updatedAt
+      url
+      project { name referencePrefix }
+      tags
+      customFields { key name value }
+    }
+  }
+`;
+
+export const updateIdeaMutation = `
+  mutation UpdateIdea($id: ID!, $idea: IdeaAttributes!) {
+    updateIdea(id: $id, idea: $idea) {
+      idea {
+        id
+        referenceNum
+        name
+        workflowStatus { name }
+        tags
+        customFields { key name value }
+      }
+      errors { message }
+    }
+  }
+`;
+
+export const createIdeaCommentMutation = `
+  mutation CreateIdeaComment($ideaId: ID!, $body: String!) {
+    createIdeaComment(ideaId: $ideaId, ideaComment: { body: $body }) {
+      ideaComment {
+        id
+        body
+        createdAt
+      }
+      errors { message }
+    }
+  }
+`;

@@ -38,7 +38,7 @@ class AhaMcp {
     this.server = new Server(
       {
         name: "aha-mcp",
-        version: "1.1.0",
+        version: "1.2.0",
       },
       {
         capabilities: {
@@ -114,6 +114,118 @@ class AhaMcp {
             required: ["query"],
           },
         },
+        {
+          name: "search_ideas",
+          description:
+            "Search Aha! ideas with optional filters. Returns idea details including votes, score, workflow status, description, and all custom fields. Use updatedSince (ISO 8601) to fetch only recently updated ideas.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              query: {
+                type: "string",
+                description: "Search query string (leave empty to list all ideas)",
+              },
+              workflowStatus: {
+                type: "string",
+                description:
+                  "Filter by workflow status name (e.g., 'Submitted', 'Under consideration'). Filtering is applied client-side.",
+              },
+              updatedSince: {
+                type: "string",
+                description:
+                  "Return ideas updated at or after this ISO 8601 timestamp (e.g., '2026-05-03T00:00:00Z'). Use for date-windowed fetches.",
+              },
+            },
+            required: [],
+          },
+        },
+        {
+          name: "get_idea",
+          description:
+            "Get a single Aha! idea by reference number. Returns full idea details including all custom fields, tags, workflow status, votes, and description.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              reference: {
+                type: "string",
+                description: "Idea reference number (e.g., 'APP-I-123')",
+              },
+            },
+            required: ["reference"],
+          },
+        },
+        {
+          name: "update_idea",
+          description:
+            "Update fields on an Aha! idea. Supports built-in fields (status, name, score, assignee, tags) and custom fields via key-value pairs.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              id: {
+                type: "string",
+                description: "Idea reference number (e.g., 'APP-I-123') or internal ID",
+              },
+              fields: {
+                type: "object",
+                description: "Fields to update on the idea",
+                properties: {
+                  name: { type: "string", description: "New idea name" },
+                  workflowStatus: {
+                    type: "string",
+                    description: "Workflow status name to set",
+                  },
+                  score: { type: "number", description: "Idea score (priority)" },
+                  assignedToUser: {
+                    type: "string",
+                    description: "Email of user to assign the idea to",
+                  },
+                  tags: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Full tags array to set on the idea (replaces existing tags)",
+                  },
+                  customFields: {
+                    type: "array",
+                    description: "Custom fields to update as key-value pairs",
+                    items: {
+                      type: "object",
+                      properties: {
+                        key: {
+                          type: "string",
+                          description: "Custom field key (e.g., 'value_to_rithum', 'impact')",
+                        },
+                        value: {
+                          type: "string",
+                          description: "Value to set for the custom field",
+                        },
+                      },
+                      required: ["key", "value"],
+                    },
+                  },
+                },
+              },
+            },
+            required: ["id", "fields"],
+          },
+        },
+        {
+          name: "post_idea_comment",
+          description: "Post a comment on an Aha! idea to engage with the requester",
+          inputSchema: {
+            type: "object",
+            properties: {
+              ideaId: {
+                type: "string",
+                description: "Idea reference number (e.g., 'APP-I-123') or internal ID",
+              },
+              body: {
+                type: "string",
+                description: "Comment text (HTML supported)",
+              },
+            },
+            required: ["ideaId", "body"],
+          },
+        },
       ],
     }));
 
@@ -124,6 +236,14 @@ class AhaMcp {
         return this.handlers.handleGetPage(request);
       } else if (request.params.name === "search_documents") {
         return this.handlers.handleSearchDocuments(request);
+      } else if (request.params.name === "search_ideas") {
+        return this.handlers.handleSearchIdeas(request);
+      } else if (request.params.name === "get_idea") {
+        return this.handlers.handleGetIdea(request);
+      } else if (request.params.name === "update_idea") {
+        return this.handlers.handleUpdateIdea(request);
+      } else if (request.params.name === "post_idea_comment") {
+        return this.handlers.handlePostIdeaComment(request);
       }
 
       throw new McpError(
