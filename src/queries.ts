@@ -66,13 +66,13 @@ export const searchIdeasQuery = `
         description { htmlBody }
         workflowStatus { name }
         score
-        endorsementsCount
+        votes
         createdAt
         updatedAt
-        url
+        resourceUrl
         project { name referencePrefix }
-        tags
-        customFields { key name value }
+        tags { name }
+        customFieldValues { key name value }
       }
       currentPage
       totalCount
@@ -91,13 +91,13 @@ export const getIdeaQuery = `
       description { htmlBody }
       workflowStatus { name }
       score
-      endorsementsCount
+      votes
       createdAt
       updatedAt
-      url
+      resourceUrl
       project { name referencePrefix }
-      tags
-      customFields { key name value }
+      tags { name }
+      customFieldValues { key name value }
     }
   }
 `;
@@ -110,8 +110,8 @@ export const updateIdeaMutation = `
         referenceNum
         name
         workflowStatus { name }
-        tags
-        customFields { key name value }
+        tags { name }
+        customFieldValues { key name value }
       }
       errors { message }
     }

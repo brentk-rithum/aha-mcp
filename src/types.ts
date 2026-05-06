@@ -66,7 +66,11 @@ export interface IdeaProject {
   referencePrefix: string;
 }
 
-export interface CustomField {
+export interface IdeaTag {
+  name: string;
+}
+
+export interface CustomFieldValue {
   key: string;
   name: string;
   value: string | null;
@@ -79,13 +83,13 @@ export interface Idea {
   description: IdeaDescription;
   workflowStatus: WorkflowStatus;
   score: number | null;
-  endorsementsCount: number;
+  votes: number;
   createdAt: string;
   updatedAt: string;
-  url: string;
+  resourceUrl: string;
   project: IdeaProject;
-  tags: string[];
-  customFields: CustomField[];
+  tags: IdeaTag[];
+  customFieldValues: CustomFieldValue[];
 }
 
 export interface IdeaCustomFieldInput {
@@ -124,7 +128,7 @@ export interface GetIdeaResponse {
 
 export interface UpdateIdeaResponse {
   updateIdea: {
-    idea: Pick<Idea, "id" | "referenceNum" | "name" | "workflowStatus" | "tags" | "customFields"> | null;
+    idea: Pick<Idea, "id" | "referenceNum" | "name" | "workflowStatus" | "tags" | "customFieldValues"> | null;
     errors: Array<{ message: string }>;
   };
 }
