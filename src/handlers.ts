@@ -209,10 +209,15 @@ export class Handlers {
     try {
       const data = await this.client.request<SearchIdeasResponse>(
         searchIdeasQuery,
-        { query, updatedSince }
+        { query }
       );
 
       let ideas = data.ideas.nodes;
+
+      if (updatedSince) {
+        const since = new Date(updatedSince);
+        ideas = ideas.filter((idea) => new Date(idea.updatedAt) >= since);
+      }
 
       // Client-side filter by workflow status name (API requires ID, we filter by name)
       if (workflowStatus) {

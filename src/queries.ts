@@ -57,8 +57,8 @@ export const searchDocumentsQuery = `
 `;
 
 export const searchIdeasQuery = `
-  query SearchIdeas($query: String, $updatedSince: String) {
-    ideas(filters: { query: $query, updatedSince: $updatedSince }) {
+  query SearchIdeas($query: String) {
+    ideas(filters: { query: $query }) {
       nodes {
         id
         referenceNum
@@ -69,10 +69,10 @@ export const searchIdeasQuery = `
         votes
         createdAt
         updatedAt
-        resourceUrl
+        url
         project { name referencePrefix }
         tags { name }
-        customFieldValues { key name value }
+        customFieldValues { key value }
       }
       currentPage
       totalCount
@@ -94,10 +94,10 @@ export const getIdeaQuery = `
       votes
       createdAt
       updatedAt
-      resourceUrl
+      url
       project { name referencePrefix }
       tags { name }
-      customFieldValues { key name value }
+      customFieldValues { key value }
     }
   }
 `;
@@ -111,7 +111,7 @@ export const updateIdeaMutation = `
         name
         workflowStatus { name }
         tags { name }
-        customFieldValues { key name value }
+        customFieldValues { key value }
       }
       errors { message }
     }
