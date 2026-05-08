@@ -69,7 +69,7 @@ export const searchIdeasQuery = `
         votes
         createdAt
         updatedAt
-        url
+        createdBy { email }
         project { name referencePrefix }
         tags { name }
         customFieldValues { key value }
@@ -94,7 +94,7 @@ export const getIdeaQuery = `
       votes
       createdAt
       updatedAt
-      url
+      createdBy { email }
       project { name referencePrefix }
       tags { name }
       customFieldValues { key value }
