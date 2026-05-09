@@ -26,6 +26,7 @@ import {
   updateIdeaMutation,
   createIdeaCommentMutation,
   getProjectIdeaFieldsQuery,
+  introspectIdeaTypeQuery,
 } from "./queries.js";
 
 export class Handlers {
@@ -398,6 +399,19 @@ export class Handlers {
         ErrorCode.InternalError,
         `Failed to fetch idea portal fields: ${errorMessage}`
       );
+    }
+  }
+
+  async handleIntrospectIdeaType(_request: any) {
+    try {
+      const data = await this.client.request<any>(introspectIdeaTypeQuery);
+      return {
+        content: [{ type: "text", text: JSON.stringify(data.__type, null, 2) }],
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(ErrorCode.InternalError, `Introspection failed: ${errorMessage}`);
     }
   }
 

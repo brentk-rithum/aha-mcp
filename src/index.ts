@@ -162,6 +162,11 @@ class AhaMcp {
           },
         },
         {
+          name: "introspect_idea_type",
+          description: "Run GraphQL introspection on the Idea type to list all available fields and their types.",
+          inputSchema: { type: "object", properties: {}, required: [] },
+        },
+        {
           name: "get_idea",
           description:
             "Get a single Aha! idea by reference number. Returns full idea details including all custom fields, tags, workflow status, votes, and description.",
@@ -262,6 +267,8 @@ class AhaMcp {
         return this.handlers.handleSearchIdeas(request);
       } else if (request.params.name === "get_idea_portal_fields") {
         return this.handlers.handleGetIdeaPortalFields(request);
+      } else if (request.params.name === "introspect_idea_type") {
+        return this.handlers.handleIntrospectIdeaType(request);
       } else if (request.params.name === "get_idea") {
         return this.handlers.handleGetIdea(request);
       } else if (request.params.name === "update_idea") {

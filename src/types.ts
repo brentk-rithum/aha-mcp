@@ -143,7 +143,7 @@ export interface IdeaCustomFieldDef {
 export interface GetProjectIdeaFieldsResponse {
   project: {
     name: string;
-    customFields: IdeaCustomFieldDef[];
+    customFieldValues: IdeaCustomFieldDef[];
   };
 }
 

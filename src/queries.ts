@@ -120,10 +120,28 @@ export const getProjectIdeaFieldsQuery = `
   query GetProjectIdeaFields($projectId: ID!) {
     project(id: $projectId) {
       name
-      customFields {
+      customFieldValues {
         key
         name
-        fieldType
+        value
+      }
+    }
+  }
+`;
+
+export const introspectIdeaTypeQuery = `
+  query IntrospectIdeaType {
+    __type(name: "Idea") {
+      fields {
+        name
+        type {
+          name
+          kind
+          ofType {
+            name
+            kind
+          }
+        }
       }
     }
   }
