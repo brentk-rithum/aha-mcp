@@ -148,6 +148,7 @@ export const introspectTypeQuery = `
   query IntrospectType($typeName: String!) {
     __type(name: $typeName) {
       name
+      kind
       fields {
         name
         type {
@@ -158,6 +159,10 @@ export const introspectTypeQuery = `
             kind
           }
         }
+      }
+      possibleTypes {
+        name
+        kind
       }
     }
   }
