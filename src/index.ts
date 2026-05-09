@@ -118,7 +118,7 @@ class AhaMcp {
         {
           name: "search_ideas",
           description:
-            "Search Aha! ideas with optional filters. Returns idea details including votes, score, workflow status, description, and all custom fields. Use updatedSince (ISO 8601) to fetch only recently updated ideas.",
+            "Search Aha! ideas with optional filters. Returns idea details including votes, score, workflow status, description, and all custom fields. Use updatedSince (ISO 8601) to fetch recently updated ideas. WARNING: workflowStatus and updatedSince filters are both applied client-side on a single page of results — do not combine them or results will be incomplete. Use one or the other.",
           inputSchema: {
             type: "object",
             properties: {
