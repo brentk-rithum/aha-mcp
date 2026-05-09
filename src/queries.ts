@@ -131,7 +131,7 @@ export const updateIdeaMutation = `
         tags { name }
         customFieldValues { key value }
       }
-      errors { attributes }
+      errors { attributes { name messages } }
     }
   }
 `;
