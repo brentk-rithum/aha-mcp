@@ -168,6 +168,17 @@ export const introspectTypeQuery = `
           }
         }
       }
+      inputFields {
+        name
+        type {
+          name
+          kind
+          ofType {
+            name
+            kind
+          }
+        }
+      }
       possibleTypes {
         name
         kind
