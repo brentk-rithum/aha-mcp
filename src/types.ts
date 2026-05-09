@@ -71,6 +71,10 @@ export interface IdeaTag {
   name: string;
 }
 
+export interface IdeaCategory {
+  name: string;
+}
+
 export interface CustomFieldValue {
   key: string;
   name: string;
@@ -90,6 +94,7 @@ export interface Idea {
   resourceUrl: string;
   project: IdeaProject;
   tags: IdeaTag[];
+  ideaCategories: IdeaCategory[];
   customFieldValues: CustomFieldValue[];
   screenDefinition?: ScreenDefinition | null;
 }

@@ -71,6 +71,7 @@ export const searchIdeasQuery = `
         updatedAt
         project { name referencePrefix }
         tags { name }
+        ideaCategories { name }
         customFieldValues { key name value }
       }
       currentPage
@@ -95,6 +96,7 @@ export const getIdeaQuery = `
       updatedAt
       project { id name referencePrefix }
       tags { name }
+      ideaCategories { name }
       customFieldValues { key name value }
       screenDefinition {
         customFieldDefinitions {
