@@ -200,7 +200,7 @@ export const getProjectMetadataQuery = `
         workflowStatuses {
           id
           name
-          complete
+          internalMeaning
         }
       }
     }

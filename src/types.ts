@@ -179,7 +179,7 @@ export interface GetIdeaPortalFieldsResponse {
 export interface ProjectWorkflowStatus {
   id: string;
   name: string;
-  complete: boolean;
+  internalMeaning: string | null;
 }
 
 export interface GetProjectMetadataResponse {

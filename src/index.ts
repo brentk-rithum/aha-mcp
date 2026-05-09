@@ -190,7 +190,7 @@ class AhaMcp {
         {
           name: "update_idea",
           description:
-            "Update fields on an Aha! idea. Supports built-in fields (status, name, score, assignee, tags) and custom fields via key-value pairs.",
+            "Update built-in fields on an Aha! idea: name, workflowStatus, score, assignee, tags, and idea categories. For custom fields (impact, urgency, etc.) use set_idea_custom_fields instead.",
           inputSchema: {
             type: "object",
             properties: {
@@ -204,20 +204,45 @@ class AhaMcp {
                 properties: {
                   name: { type: "string", description: "New idea name" },
                   workflowStatus: {
-                    type: "string",
-                    description: "Workflow status name to set",
+                    type: "object",
+                    description: "Workflow status to set. Pass {name: 'Submitted'} or {id: '...'}. Get valid names from get_project_metadata.",
+                    properties: {
+                      id: { type: "string" },
+                      name: { type: "string" },
+                    },
                   },
                   score: { type: "number", description: "Idea score (priority)" },
                   assignedToUser: {
-                    type: "string",
-                    description: "Email of user to assign the idea to",
+                    type: "object",
+                    description: "User to assign. Pass {email: 'user@example.com'} or {id: '...'}. Pass {id: null} to unassign.",
+                    properties: {
+                      id: { type: "string" },
+                      email: { type: "string" },
+                    },
                   },
                   tags: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Full tags array to set on the idea (replaces existing tags)",
+                    description: "Full tags array to set (replaces existing tags)",
                   },
-
+                  addIdeaCategories: {
+                    type: "array",
+                    description: "Categories to add. Each item must be {id: '...'}. Get valid IDs from get_project_metadata.",
+                    items: {
+                      type: "object",
+                      properties: { id: { type: "string" } },
+                      required: ["id"],
+                    },
+                  },
+                  removeIdeaCategories: {
+                    type: "array",
+                    description: "Categories to remove. Each item must be {id: '...'}.",
+                    items: {
+                      type: "object",
+                      properties: { id: { type: "string" } },
+                      required: ["id"],
+                    },
+                  },
                 },
               },
             },
