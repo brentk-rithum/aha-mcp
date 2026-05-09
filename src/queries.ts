@@ -57,8 +57,8 @@ export const searchDocumentsQuery = `
 `;
 
 export const searchIdeasQuery = `
-  query SearchIdeas($query: String) {
-    ideas(filters: { query: $query }) {
+  query SearchIdeas($query: String, $projectId: ID) {
+    ideas(filters: { query: $query, projectId: $projectId }) {
       nodes {
         id
         referenceNum
@@ -95,7 +95,7 @@ export const getIdeaQuery = `
       createdAt
       updatedAt
       createdBy { email }
-      project { name referencePrefix }
+      project { id name referencePrefix }
       tags { name }
       customFieldValues { key value }
     }
@@ -114,6 +114,19 @@ export const updateIdeaMutation = `
         customFieldValues { key value }
       }
       errors { message }
+    }
+  }
+`;
+
+export const getProjectIdeaFieldsQuery = `
+  query GetProjectIdeaFields($projectId: ID!) {
+    project(id: $projectId) {
+      name
+      ideaCustomFields {
+        key
+        name
+        fieldType
+      }
     }
   }
 `;

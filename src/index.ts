@@ -12,6 +12,7 @@ import { Handlers } from "./handlers.js";
 
 const AHA_API_TOKEN = process.env.AHA_API_TOKEN;
 const AHA_DOMAIN = process.env.AHA_DOMAIN;
+const AHA_PROJECT_ID = process.env.AHA_PROJECT_ID;
 
 if (!AHA_API_TOKEN) {
   throw new Error("AHA_API_TOKEN environment variable is required");
@@ -47,7 +48,7 @@ class AhaMcp {
       }
     );
 
-    this.handlers = new Handlers(client);
+    this.handlers = new Handlers(client, AHA_PROJECT_ID);
     this.setupToolHandlers();
 
     this.server.onerror = (error) => console.error("[MCP Error]", error);
@@ -134,6 +135,27 @@ class AhaMcp {
                 type: "string",
                 description:
                   "Return ideas updated at or after this ISO 8601 timestamp (e.g., '2026-05-03T00:00:00Z'). Use for date-windowed fetches.",
+              },
+              projectId: {
+                type: "string",
+                description:
+                  "Aha! project ID to scope results. Overrides AHA_PROJECT_ID env var if provided.",
+              },
+            },
+            required: [],
+          },
+        },
+        {
+          name: "get_idea_portal_fields",
+          description:
+            "List all custom field definitions configured for the Aha! ideas portal project. Returns field keys, display names, and types — useful for discovering keys like risk_to_renewal, blocker_to_use, etc. before they appear on any idea.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              projectId: {
+                type: "string",
+                description:
+                  "Aha! project ID. Overrides AHA_PROJECT_ID env var if provided.",
               },
             },
             required: [],
@@ -238,6 +260,8 @@ class AhaMcp {
         return this.handlers.handleSearchDocuments(request);
       } else if (request.params.name === "search_ideas") {
         return this.handlers.handleSearchIdeas(request);
+      } else if (request.params.name === "get_idea_portal_fields") {
+        return this.handlers.handleGetIdeaPortalFields(request);
       } else if (request.params.name === "get_idea") {
         return this.handlers.handleGetIdea(request);
       } else if (request.params.name === "update_idea") {

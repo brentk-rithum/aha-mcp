@@ -62,6 +62,7 @@ export interface WorkflowStatus {
 }
 
 export interface IdeaProject {
+  id?: string;
   name: string;
   referencePrefix: string;
 }
@@ -130,6 +131,19 @@ export interface UpdateIdeaResponse {
   updateIdea: {
     idea: Pick<Idea, "id" | "referenceNum" | "name" | "workflowStatus" | "tags" | "customFieldValues"> | null;
     errors: Array<{ message: string }>;
+  };
+}
+
+export interface IdeaCustomFieldDef {
+  key: string;
+  name: string;
+  fieldType: string;
+}
+
+export interface GetProjectIdeaFieldsResponse {
+  project: {
+    name: string;
+    ideaCustomFields: IdeaCustomFieldDef[];
   };
 }
 

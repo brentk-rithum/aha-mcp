@@ -14,6 +14,7 @@ import {
   GetIdeaResponse,
   UpdateIdeaResponse,
   CreateIdeaCommentResponse,
+  GetProjectIdeaFieldsResponse,
 } from "./types.js";
 import {
   getFeatureQuery,
@@ -24,10 +25,11 @@ import {
   getIdeaQuery,
   updateIdeaMutation,
   createIdeaCommentMutation,
+  getProjectIdeaFieldsQuery,
 } from "./queries.js";
 
 export class Handlers {
-  constructor(private client: GraphQLClient) {}
+  constructor(private client: GraphQLClient, private projectId?: string) {}
 
   async handleGetRecord(request: any) {
     const { reference } = request.params.arguments as { reference: string };
@@ -200,16 +202,19 @@ export class Handlers {
   }
 
   async handleSearchIdeas(request: any) {
-    const { query, workflowStatus, updatedSince } = request.params.arguments as {
+    const { query, workflowStatus, updatedSince, projectId: paramProjectId } = request.params.arguments as {
       query?: string;
       workflowStatus?: string;
       updatedSince?: string;
+      projectId?: string;
     };
+
+    const projectId = paramProjectId ?? this.projectId;
 
     try {
       const data = await this.client.request<SearchIdeasResponse>(
         searchIdeasQuery,
-        { query }
+        { query, projectId }
       );
 
       let ideas = data.ideas.nodes;
@@ -349,6 +354,49 @@ export class Handlers {
       throw new McpError(
         ErrorCode.InternalError,
         `Failed to update idea: ${errorMessage}`
+      );
+    }
+  }
+
+  async handleGetIdeaPortalFields(request: any) {
+    const { projectId: paramProjectId } = (request.params.arguments ?? {}) as {
+      projectId?: string;
+    };
+
+    const projectId = paramProjectId ?? this.projectId;
+
+    if (!projectId) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "projectId is required (or set AHA_PROJECT_ID env var)"
+      );
+    }
+
+    try {
+      const data = await this.client.request<GetProjectIdeaFieldsResponse>(
+        getProjectIdeaFieldsQuery,
+        { projectId }
+      );
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(data.project, null, 2),
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof McpError) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(
+        ErrorCode.InternalError,
+        `Failed to fetch idea portal fields: ${errorMessage}`
       );
     }
   }
