@@ -437,7 +437,21 @@ export class Handlers {
       ideaRef?: string;
     };
 
-    const ref = ideaRef ?? "IDEA-I-5623";
+    let ref = ideaRef;
+    if (!ref) {
+      const fallback = await this.client.request<SearchIdeasResponse>(
+        searchIdeasQuery,
+        { projectId: this.projectId, page: 1 }
+      );
+      const first = fallback.ideas?.nodes?.[0];
+      if (!first) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "ideaRef is required — no ideas found to auto-detect portal screen definition"
+        );
+      }
+      ref = first.referenceNum;
+    }
 
     try {
       const data = await this.client.request<GetIdeaPortalFieldsResponse>(

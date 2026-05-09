@@ -45,6 +45,7 @@ This MCP server requires the following environment variables:
 
 - `AHA_API_TOKEN`: Your Aha! API token
 - `AHA_DOMAIN`: Your Aha! domain (e.g., yourcompany if you access aha at yourcompany.aha.io)
+- `AHA_PROJECT_ID` (optional): Default project ID for idea tools — used when no `projectId` is passed
 
 ## IDE Integration
 
@@ -241,23 +242,117 @@ Searches for Aha! documents.
 }
 ```
 
+### 4. search_ideas
+
+Searches for Aha! ideas with optional filters and pagination.
+
+**Parameters:**
+
+- `query` (optional): Search query string
+- `workflowStatusId` (optional): Filter by status ID server-side — get IDs from `get_project_metadata`
+- `workflowStatus` (optional): Filter by status name client-side (fallback; less reliable)
+- `updatedSince` (optional): ISO 8601 timestamp — auto-paginates to find all updated ideas
+- `projectId` (optional): Scope to a specific project (defaults to `AHA_PROJECT_ID`)
+- `maxPages` (optional): Pagination cap (default 50, max 100)
+
+### 5. get_idea
+
+Gets full details for a single Aha! idea.
+
+**Parameters:**
+
+- `reference` (required): Idea reference number (e.g., `APP-I-123`)
+
+### 6. update_idea
+
+Updates built-in fields on an Aha! idea. For custom fields, use `set_idea_custom_fields`.
+
+**Parameters:**
+
+- `id` (required): Idea reference number (e.g., `APP-I-123`) or internal ID
+- `fields` (required): Object with any of: `name`, `workflowStatus` (`{name}` or `{id}`), `score`, `assignedToUser` (`{email}` or `{id}`), `tags` (replaces entirely), `addIdeaCategories`, `removeIdeaCategories`
+
+### 7. get_project_metadata
+
+Gets workflow status IDs and category IDs for an Aha! project. Call this before filtering or updating ideas.
+
+**Parameters:**
+
+- `projectId` (optional): Defaults to `AHA_PROJECT_ID`
+
+### 8. set_idea_custom_fields
+
+Sets custom field values on an idea (impact, urgency, etc.).
+
+**Parameters:**
+
+- `id` (required): Idea reference number or internal ID
+- `customFields` (required): Array of `{key, value}` pairs — get valid keys from `get_idea_portal_fields`
+
+### 9. post_idea_comment
+
+Posts a comment on an Aha! idea (HTML supported).
+
+**Parameters:**
+
+- `ideaId` (required): Idea reference number (e.g., `APP-I-123`)
+- `body` (required): Comment body (HTML)
+
+### 10. get_idea_portal_fields
+
+Lists all custom field definitions for an ideas portal (keys, display names, types, valid options).
+
+**Parameters:**
+
+- `ideaRef` (optional): Any idea reference from the project — auto-detected if omitted
+
+### 11. introspect_idea_type
+
+Runs GraphQL introspection on an Aha! type for schema exploration.
+
+**Parameters:**
+
+- `typeName` (optional): GraphQL type name (default: `Idea`)
+
 ## Example Queries
 
 - "Get feature DEVELOP-123"
 - "Fetch the product roadmap page ABC-N-213"
 - "Search for pages about launch planning"
 - "Get requirement ADT-123-1"
-- "Find all pages mentioning Q2 goals"
+- "Find all ideas in 'Under Review' status"
+- "Show me ideas updated since last week"
+- "Set the impact custom field on APP-I-456 to High"
+
+## Multi-Step Workflow Examples
+
+**Search ideas by status:**
+```
+1. get_project_metadata  →  find workflowStatus ID for "Under Review"
+2. search_ideas({ workflowStatusId: "<id>" })
+```
+
+**Update idea status:**
+```
+1. get_project_metadata  →  confirm status name/ID
+2. update_idea({ id: "APP-I-123", fields: { workflowStatus: { name: "Shipped" } } })
+```
+
+**Set custom fields:**
+```
+1. get_idea_portal_fields  →  find field keys and valid option values
+2. set_idea_custom_fields({ id: "APP-I-123", customFields: [{ key: "impact", value: "High" }] })
+```
+
+See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md) for the full workflow reference.
 
 ## Configuration Options
 
-| Variable        | Description                                 | Default  |
-| --------------- | ------------------------------------------- | -------- |
-| `AHA_API_TOKEN` | Your Aha! API token                         | Required |
-| `AHA_DOMAIN`    | Your Aha! domain (e.g., yourcompany.aha.io) | Required |
-| `LOG_LEVEL`     | Logging level (debug, info, warn, error)    | info     |
-| `PORT`          | Port for SSE transport                      | 3000     |
-| `TRANSPORT`     | Transport type (stdio or sse)               | stdio    |
+| Variable          | Description                                      | Default  |
+| ----------------- | ------------------------------------------------ | -------- |
+| `AHA_API_TOKEN`   | Your Aha! API token                              | Required |
+| `AHA_DOMAIN`      | Your Aha! domain subdomain (e.g., `yourcompany`) | Required |
+| `AHA_PROJECT_ID`  | Default project ID for idea tools                | Optional |
 
 ## Troubleshooting
 

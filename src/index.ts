@@ -118,7 +118,7 @@ class AhaMcp {
         {
           name: "search_ideas",
           description:
-            "Search Aha! ideas with optional filters. When updatedSince is set, paginates automatically (up to 20 pages) and stops when a full page predates the cutoff. Use workflowStatusId (from get_project_metadata) for server-side status filtering — faster and more reliable than workflowStatus name matching.",
+            "Search Aha! ideas with optional filters. When updatedSince is set, paginates automatically (default 50 pages, max 100). Use workflowStatusId (from get_project_metadata) for server-side status filtering — faster and more reliable than workflowStatus name matching.",
           inputSchema: {
             type: "object",
             properties: {
@@ -262,7 +262,7 @@ class AhaMcp {
         {
           name: "get_project_metadata",
           description:
-            "Get idea categories and workflow statuses for an Aha! ideas portal project. Use this to discover valid category names and status names before filtering or updating ideas.",
+            "Get idea categories and workflow statuses for an Aha! ideas portal project. Returns workflowStatus IDs for use with search_ideas(workflowStatusId) and category IDs for update_idea.",
           inputSchema: {
             type: "object",
             properties: {

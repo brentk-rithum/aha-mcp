@@ -1,0 +1,43 @@
+# Aha! MCP — Quick Reference
+
+## Reference Number Formats
+
+| Type        | Format        | Example       |
+|-------------|---------------|---------------|
+| Feature     | PREFIX-###    | DEVELOP-123   |
+| Requirement | PREFIX-###-## | ADT-123-1     |
+| Idea        | PREFIX-I-###  | APP-I-123     |
+| Page/Note   | PREFIX-N-###  | ABC-N-213     |
+
+## Tool Selection
+
+| Goal | Tool |
+|------|------|
+| Get feature or requirement | `get_record` |
+| Get wiki/notes page | `get_page` |
+| Search wiki pages | `search_documents` |
+| Search or list ideas | `search_ideas` |
+| Get full idea detail | `get_idea` |
+| Update name/status/score/assignee/tags/categories | `update_idea` |
+| Set custom fields (impact, urgency, etc.) | `set_idea_custom_fields` |
+| Post comment on idea | `post_idea_comment` |
+| Get status IDs and category IDs | `get_project_metadata` |
+| Get custom field keys and options | `get_idea_portal_fields` |
+| Inspect GraphQL schema | `introspect_idea_type` |
+
+## Critical Gotchas
+
+- `update_idea` and `set_idea_custom_fields` accept `referenceNum` (e.g. `APP-I-123`) as `id`
+- Prefer `workflowStatusId` in `search_ideas` (server-side); `workflowStatus` name is client-side only and may miss results
+- Get status/category IDs from `get_project_metadata` before filtering or updating
+- `tags` in `update_idea` **replaces** entirely — read existing tags via `get_idea` first
+- Built-in fields → `update_idea`; custom fields → `set_idea_custom_fields`
+- See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md) for multi-step patterns
+
+## Environment Variables
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `AHA_API_TOKEN` | Yes | Bearer token for Aha! API |
+| `AHA_DOMAIN` | Yes | Subdomain (e.g. `mycompany` for mycompany.aha.io) |
+| `AHA_PROJECT_ID` | No | Default project scope for idea tools |
