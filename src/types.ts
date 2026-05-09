@@ -176,6 +176,23 @@ export interface GetIdeaPortalFieldsResponse {
   };
 }
 
+export interface ProjectWorkflowStatus {
+  id: string;
+  name: string;
+  complete: boolean;
+}
+
+export interface GetProjectMetadataResponse {
+  project: {
+    name: string;
+    referencePrefix: string;
+    ideaCategories: Array<{ id: string; name: string }>;
+    ideaWorkflow: {
+      workflowStatuses: ProjectWorkflowStatus[];
+    } | null;
+  };
+}
+
 export interface SetCustomFieldValuesResponse {
   setCustomFieldValues: {
     customFieldValues: CustomFieldValue[];

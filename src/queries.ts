@@ -187,6 +187,26 @@ export const introspectTypeQuery = `
   }
 `;
 
+export const getProjectMetadataQuery = `
+  query GetProjectMetadata($projectId: ID!) {
+    project(id: $projectId) {
+      name
+      referencePrefix
+      ideaCategories {
+        id
+        name
+      }
+      ideaWorkflow {
+        workflowStatuses {
+          id
+          name
+          complete
+        }
+      }
+    }
+  }
+`;
+
 export const setCustomFieldValuesMutation = `
   mutation SetCustomFieldValues($id: ID!, $typename: CustomFieldableTypeEnum!, $customFieldValues: [CustomFieldValueInput!]!) {
     setCustomFieldValues(attributes: { record: { id: $id, typename: $typename }, customFieldValues: $customFieldValues }) {

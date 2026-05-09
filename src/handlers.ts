@@ -16,6 +16,7 @@ import {
   CreateIdeaCommentResponse,
   GetIdeaPortalFieldsResponse,
   SetCustomFieldValuesResponse,
+  GetProjectMetadataResponse,
 } from "./types.js";
 import {
   getFeatureQuery,
@@ -29,6 +30,7 @@ import {
   createIdeaCommentMutation,
   getIdeaPortalFieldsQuery,
   introspectTypeQuery,
+  getProjectMetadataQuery,
 } from "./queries.js";
 
 export class Handlers {
@@ -417,6 +419,30 @@ export class Handlers {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error("API Error:", errorMessage);
       throw new McpError(ErrorCode.InternalError, `Introspection failed: ${errorMessage}`);
+    }
+  }
+
+  async handleGetProjectMetadata(request: any) {
+    const { projectId: paramProjectId } = (request.params.arguments ?? {}) as { projectId?: string };
+    const projectId = paramProjectId ?? this.projectId;
+
+    if (!projectId) {
+      throw new McpError(ErrorCode.InvalidParams, "projectId is required (or set AHA_PROJECT_ID env var)");
+    }
+
+    try {
+      const data = await this.client.request<GetProjectMetadataResponse>(
+        getProjectMetadataQuery,
+        { projectId }
+      );
+      return {
+        content: [{ type: "text", text: JSON.stringify(data.project, null, 2) }],
+      };
+    } catch (error) {
+      if (error instanceof McpError) throw error;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(ErrorCode.InternalError, `Failed to fetch project metadata: ${errorMessage}`);
     }
   }
 

@@ -217,28 +217,26 @@ class AhaMcp {
                     items: { type: "string" },
                     description: "Full tags array to set on the idea (replaces existing tags)",
                   },
-                  customFields: {
-                    type: "array",
-                    description: "Custom fields to update as key-value pairs",
-                    items: {
-                      type: "object",
-                      properties: {
-                        key: {
-                          type: "string",
-                          description: "Custom field key (e.g., 'value_to_rithum', 'impact')",
-                        },
-                        value: {
-                          type: "string",
-                          description: "Value to set for the custom field",
-                        },
-                      },
-                      required: ["key", "value"],
-                    },
-                  },
+
                 },
               },
             },
             required: ["id", "fields"],
+          },
+        },
+        {
+          name: "get_project_metadata",
+          description:
+            "Get idea categories and workflow statuses for an Aha! ideas portal project. Use this to discover valid category names and status names before filtering or updating ideas.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              projectId: {
+                type: "string",
+                description: "Aha! project ID. Defaults to AHA_PROJECT_ID env var.",
+              },
+            },
+            required: [],
           },
         },
         {
@@ -311,6 +309,8 @@ class AhaMcp {
         return this.handlers.handleGetIdea(request);
       } else if (request.params.name === "update_idea") {
         return this.handlers.handleUpdateIdea(request);
+      } else if (request.params.name === "get_project_metadata") {
+        return this.handlers.handleGetProjectMetadata(request);
       } else if (request.params.name === "set_idea_custom_fields") {
         return this.handlers.handleSetIdeaCustomFields(request);
       } else if (request.params.name === "post_idea_comment") {
