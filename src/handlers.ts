@@ -14,7 +14,7 @@ import {
   GetIdeaResponse,
   UpdateIdeaResponse,
   CreateIdeaCommentResponse,
-  GetProjectIdeaFieldsResponse,
+  GetIdeaPortalFieldsResponse,
 } from "./types.js";
 import {
   getFeatureQuery,
@@ -25,7 +25,7 @@ import {
   getIdeaQuery,
   updateIdeaMutation,
   createIdeaCommentMutation,
-  getProjectIdeaFieldsQuery,
+  getIdeaPortalFieldsQuery,
   introspectTypeQuery,
 } from "./queries.js";
 
@@ -360,30 +360,23 @@ export class Handlers {
   }
 
   async handleGetIdeaPortalFields(request: any) {
-    const { projectId: paramProjectId } = (request.params.arguments ?? {}) as {
-      projectId?: string;
+    const { ideaRef } = (request.params.arguments ?? {}) as {
+      ideaRef?: string;
     };
 
-    const projectId = paramProjectId ?? this.projectId;
-
-    if (!projectId) {
-      throw new McpError(
-        ErrorCode.InvalidParams,
-        "projectId is required (or set AHA_PROJECT_ID env var)"
-      );
-    }
+    const ref = ideaRef ?? "IDEA-I-1";
 
     try {
-      const data = await this.client.request<GetProjectIdeaFieldsResponse>(
-        getProjectIdeaFieldsQuery,
-        { projectId }
+      const data = await this.client.request<GetIdeaPortalFieldsResponse>(
+        getIdeaPortalFieldsQuery,
+        { id: ref }
       );
 
       return {
         content: [
           {
             type: "text",
-            text: JSON.stringify(data.project, null, 2),
+            text: JSON.stringify(data.idea, null, 2),
           },
         ],
       };

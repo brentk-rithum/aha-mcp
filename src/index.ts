@@ -148,14 +148,14 @@ class AhaMcp {
         {
           name: "get_idea_portal_fields",
           description:
-            "List all custom field definitions configured for the Aha! ideas portal project. Returns field keys, display names, and types — useful for discovering keys like risk_to_renewal, blocker_to_use, etc. before they appear on any idea.",
+            "List all custom field definitions for the Aha! ideas portal via an idea's screenDefinition. Returns field keys, display names, types, and allowed options.",
           inputSchema: {
             type: "object",
             properties: {
-              projectId: {
+              ideaRef: {
                 type: "string",
                 description:
-                  "Aha! project ID. Overrides AHA_PROJECT_ID env var if provided.",
+                  "Any valid idea reference number (e.g. 'IDEA-I-5623'). Used to look up the portal's screen definition. Defaults to first idea if omitted.",
               },
             },
             required: [],

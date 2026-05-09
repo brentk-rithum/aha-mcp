@@ -91,6 +91,7 @@ export interface Idea {
   project: IdeaProject;
   tags: IdeaTag[];
   customFieldValues: CustomFieldValue[];
+  screenDefinition?: ScreenDefinition | null;
 }
 
 export interface IdeaCustomFieldInput {
@@ -134,16 +135,26 @@ export interface UpdateIdeaResponse {
   };
 }
 
-export interface IdeaCustomFieldDef {
-  key: string;
-  name: string;
-  fieldType: string;
+export interface CustomFieldOption {
+  id: string;
+  label: string;
 }
 
-export interface GetProjectIdeaFieldsResponse {
-  project: {
-    name: string;
-    customFieldValues: IdeaCustomFieldDef[];
+export interface CustomFieldDefinition {
+  key: string;
+  name: string;
+  type: string;
+  customFieldOptions: CustomFieldOption[];
+}
+
+export interface ScreenDefinition {
+  customFieldDefinitions: CustomFieldDefinition[];
+}
+
+export interface GetIdeaPortalFieldsResponse {
+  idea: {
+    project: { name: string };
+    screenDefinition: ScreenDefinition | null;
   };
 }
 

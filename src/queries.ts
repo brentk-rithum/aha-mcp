@@ -95,7 +95,15 @@ export const getIdeaQuery = `
       updatedAt
       project { id name referencePrefix }
       tags { name }
-      customFieldValues { key value }
+      customFieldValues { key name value }
+      screenDefinition {
+        customFieldDefinitions {
+          key
+          name
+          type
+          customFieldOptions { id label }
+        }
+      }
     }
   }
 `;
@@ -116,14 +124,17 @@ export const updateIdeaMutation = `
   }
 `;
 
-export const getProjectIdeaFieldsQuery = `
-  query GetProjectIdeaFields($projectId: ID!) {
-    project(id: $projectId) {
-      name
-      customFieldValues {
-        key
-        name
-        value
+export const getIdeaPortalFieldsQuery = `
+  query GetIdeaPortalFields($id: ID!) {
+    idea(id: $id) {
+      project { name }
+      screenDefinition {
+        customFieldDefinitions {
+          key
+          name
+          type
+          customFieldOptions { id label }
+        }
       }
     }
   }
