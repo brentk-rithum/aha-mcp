@@ -72,7 +72,7 @@ export const searchIdeasQuery = `
         project { name referencePrefix }
         tags { name }
         ideaCategories { name }
-        customFieldValues { key name value }
+        customFieldValues { key value }
       }
       currentPage
       totalCount
@@ -97,7 +97,7 @@ export const getIdeaQuery = `
       project { id name referencePrefix }
       tags { name }
       ideaCategories { name }
-      customFieldValues { key name value }
+      customFieldValues { key value }
       screenDefinition {
         customFieldDefinitions {
           key
@@ -119,7 +119,7 @@ export const updateIdeaMutation = `
         name
         workflowStatus { name }
         tags { name }
-        customFieldValues { key name value }
+        customFieldValues { key value }
       }
       errors { message }
     }

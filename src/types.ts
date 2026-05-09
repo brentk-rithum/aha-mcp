@@ -77,7 +77,6 @@ export interface IdeaCategory {
 
 export interface CustomFieldValue {
   key: string;
-  name: string;
   value: string | null;
 }
 
