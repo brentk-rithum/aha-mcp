@@ -129,9 +129,10 @@ export const getProjectIdeaFieldsQuery = `
   }
 `;
 
-export const introspectIdeaTypeQuery = `
-  query IntrospectIdeaType {
-    __type(name: "Idea") {
+export const introspectTypeQuery = `
+  query IntrospectType($typeName: String!) {
+    __type(name: $typeName) {
+      name
       fields {
         name
         type {

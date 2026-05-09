@@ -163,8 +163,14 @@ class AhaMcp {
         },
         {
           name: "introspect_idea_type",
-          description: "Run GraphQL introspection on the Idea type to list all available fields and their types.",
-          inputSchema: { type: "object", properties: {}, required: [] },
+          description: "Run GraphQL introspection on any Aha! type to list its fields. Defaults to 'Idea'. Pass typeName to inspect other types (e.g. 'ScreenDefinition', 'IdeasIdeaPortal', 'Project').",
+          inputSchema: {
+            type: "object",
+            properties: {
+              typeName: { type: "string", description: "GraphQL type name to introspect (default: 'Idea')" },
+            },
+            required: [],
+          },
         },
         {
           name: "get_idea",

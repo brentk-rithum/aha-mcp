@@ -26,7 +26,7 @@ import {
   updateIdeaMutation,
   createIdeaCommentMutation,
   getProjectIdeaFieldsQuery,
-  introspectIdeaTypeQuery,
+  introspectTypeQuery,
 } from "./queries.js";
 
 export class Handlers {
@@ -402,9 +402,10 @@ export class Handlers {
     }
   }
 
-  async handleIntrospectIdeaType(_request: any) {
+  async handleIntrospectIdeaType(request: any) {
+    const { typeName = "Idea" } = (request.params.arguments ?? {}) as { typeName?: string };
     try {
-      const data = await this.client.request<any>(introspectIdeaTypeQuery);
+      const data = await this.client.request<any>(introspectTypeQuery, { typeName });
       return {
         content: [{ type: "text", text: JSON.stringify(data.__type, null, 2) }],
       };
