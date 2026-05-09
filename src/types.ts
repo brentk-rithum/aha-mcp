@@ -137,7 +137,7 @@ export interface UpdateIdeaResponse {
 
 export interface CustomFieldOption {
   id: string;
-  label: string;
+  name: string;
 }
 
 export interface CustomFieldDefinition {

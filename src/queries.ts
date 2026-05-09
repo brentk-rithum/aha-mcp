@@ -101,7 +101,7 @@ export const getIdeaQuery = `
           key
           name
           type
-          customFieldOptions { id label }
+          customFieldOptions { id name }
         }
       }
     }
@@ -133,7 +133,7 @@ export const getIdeaPortalFieldsQuery = `
           key
           name
           type
-          customFieldOptions { id label }
+          customFieldOptions { id name }
         }
       }
     }
