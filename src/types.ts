@@ -176,9 +176,16 @@ export interface GetIdeaPortalFieldsResponse {
   };
 }
 
+export interface SetCustomFieldValuesResponse {
+  setCustomFieldValues: {
+    customFieldValues: CustomFieldValue[];
+    errors: Array<{ attributes: Array<{ name: string; messages: string[] }> }>;
+  };
+}
+
 export interface CreateIdeaCommentResponse {
-  createIdeaComment: {
-    ideaComment: IdeaComment | null;
-    errors: Array<{ message: string }>;
+  createComment: {
+    comment: IdeaComment | null;
+    errors: Array<{ attributes: Array<{ name: string; messages: string[] }> }>;
   };
 }

@@ -187,15 +187,27 @@ export const introspectTypeQuery = `
   }
 `;
 
+export const setCustomFieldValuesMutation = `
+  mutation SetCustomFieldValues($id: ID!, $typename: CustomFieldableTypeEnum!, $customFieldValues: [CustomFieldValueInput!]!) {
+    setCustomFieldValues(attributes: { record: { id: $id, typename: $typename }, customFieldValues: $customFieldValues }) {
+      customFieldValues {
+        key
+        value
+      }
+      errors { attributes { name messages } }
+    }
+  }
+`;
+
 export const createIdeaCommentMutation = `
-  mutation CreateIdeaComment($ideaId: ID!, $body: String!) {
-    createIdeaComment(ideaId: $ideaId, ideaComment: { body: $body }) {
-      ideaComment {
+  mutation CreateComment($id: ID!, $typename: CommentableTypeEnum!, $body: String!) {
+    createComment(attributes: { commentable: { id: $id, typename: $typename }, body: $body }) {
+      comment {
         id
         body
         createdAt
       }
-      errors { message }
+      errors { attributes { name messages } }
     }
   }
 `;

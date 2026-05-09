@@ -242,6 +242,38 @@ class AhaMcp {
           },
         },
         {
+          name: "set_idea_custom_fields",
+          description:
+            "Set one or more custom field values on an Aha! idea. Use this for custom fields (e.g., impact, urgency, risk factors). For dropdown fields use the option name; for multi-select use an array of names.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              id: {
+                type: "string",
+                description: "Idea reference number (e.g., 'APP-I-123') or internal ID",
+              },
+              customFields: {
+                type: "array",
+                description: "Custom fields to set as key-value pairs",
+                items: {
+                  type: "object",
+                  properties: {
+                    key: {
+                      type: "string",
+                      description: "Custom field key (e.g., 'impact', 'urgency', 'value_to_ca')",
+                    },
+                    value: {
+                      description: "Value to set. String for single-select/text, array for multi-select, null to clear.",
+                    },
+                  },
+                  required: ["key", "value"],
+                },
+              },
+            },
+            required: ["id", "customFields"],
+          },
+        },
+        {
           name: "post_idea_comment",
           description: "Post a comment on an Aha! idea to engage with the requester",
           inputSchema: {
@@ -279,6 +311,8 @@ class AhaMcp {
         return this.handlers.handleGetIdea(request);
       } else if (request.params.name === "update_idea") {
         return this.handlers.handleUpdateIdea(request);
+      } else if (request.params.name === "set_idea_custom_fields") {
+        return this.handlers.handleSetIdeaCustomFields(request);
       } else if (request.params.name === "post_idea_comment") {
         return this.handlers.handlePostIdeaComment(request);
       }

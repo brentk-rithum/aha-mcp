@@ -15,6 +15,7 @@ import {
   UpdateIdeaResponse,
   CreateIdeaCommentResponse,
   GetIdeaPortalFieldsResponse,
+  SetCustomFieldValuesResponse,
 } from "./types.js";
 import {
   getFeatureQuery,
@@ -24,6 +25,7 @@ import {
   searchIdeasQuery,
   getIdeaQuery,
   updateIdeaMutation,
+  setCustomFieldValuesMutation,
   createIdeaCommentMutation,
   getIdeaPortalFieldsQuery,
   introspectTypeQuery,
@@ -418,6 +420,64 @@ export class Handlers {
     }
   }
 
+  async handleSetIdeaCustomFields(request: any) {
+    let { id, customFields, typename = "Idea" } = request.params.arguments as {
+      id: string;
+      customFields: Array<{ key: string; value: unknown }> | string;
+      typename?: string;
+    };
+
+    if (!id) {
+      throw new McpError(ErrorCode.InvalidParams, "Idea ID is required");
+    }
+
+    if (typeof customFields === "string") {
+      try {
+        customFields = JSON.parse(customFields) as Array<{ key: string; value: unknown }>;
+      } catch {
+        throw new McpError(ErrorCode.InvalidParams, "customFields must be a valid JSON array");
+      }
+    }
+
+    if (!Array.isArray(customFields) || customFields.length === 0) {
+      throw new McpError(ErrorCode.InvalidParams, "customFields must be a non-empty array of {key, value} objects");
+    }
+
+    try {
+      const data = await this.client.request<SetCustomFieldValuesResponse>(
+        setCustomFieldValuesMutation,
+        { id, typename, customFieldValues: customFields }
+      );
+
+      if (data.setCustomFieldValues.errors.length > 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Set custom fields failed: ${JSON.stringify(data.setCustomFieldValues.errors)}`,
+            },
+          ],
+        };
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(data.setCustomFieldValues.customFieldValues, null, 2),
+          },
+        ],
+      };
+    } catch (error) {
+      if (error instanceof McpError) {
+        throw error;
+      }
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("API Error:", errorMessage);
+      throw new McpError(ErrorCode.InternalError, `Failed to set custom fields: ${errorMessage}`);
+    }
+  }
+
   async handlePostIdeaComment(request: any) {
     const { ideaId, body } = request.params.arguments as {
       ideaId: string;
@@ -435,15 +495,15 @@ export class Handlers {
     try {
       const data = await this.client.request<CreateIdeaCommentResponse>(
         createIdeaCommentMutation,
-        { ideaId, body }
+        { id: ideaId, typename: "Idea", body }
       );
 
-      if (data.createIdeaComment.errors.length > 0) {
+      if (data.createComment.errors.length > 0) {
         return {
           content: [
             {
               type: "text",
-              text: `Comment failed: ${data.createIdeaComment.errors.map((e) => e.message).join(", ")}`,
+              text: `Comment failed: ${JSON.stringify(data.createComment.errors)}`,
             },
           ],
         };
@@ -453,7 +513,7 @@ export class Handlers {
         content: [
           {
             type: "text",
-            text: JSON.stringify(data.createIdeaComment.ideaComment, null, 2),
+            text: JSON.stringify(data.createComment.comment, null, 2),
           },
         ],
       };
