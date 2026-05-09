@@ -118,7 +118,7 @@ class AhaMcp {
         {
           name: "search_ideas",
           description:
-            "Search Aha! ideas with optional filters. Returns idea details including votes, score, workflow status, description, and all custom fields. Use updatedSince (ISO 8601) to fetch recently updated ideas. WARNING: workflowStatus and updatedSince filters are both applied client-side on a single page of results — do not combine them or results will be incomplete. Use one or the other.",
+            "Search Aha! ideas with optional filters. When updatedSince is set, paginates automatically (up to 20 pages) and stops when a full page predates the cutoff. Use workflowStatusId (from get_project_metadata) for server-side status filtering — faster and more reliable than workflowStatus name matching.",
           inputSchema: {
             type: "object",
             properties: {
@@ -126,20 +126,30 @@ class AhaMcp {
                 type: "string",
                 description: "Search query string (leave empty to list all ideas)",
               },
+              workflowStatusId: {
+                type: "string",
+                description:
+                  "Filter by workflow status ID server-side (preferred). Get valid IDs from get_project_metadata. Accepts a single ID or array of IDs.",
+              },
               workflowStatus: {
                 type: "string",
                 description:
-                  "Filter by workflow status name (e.g., 'Submitted', 'Under consideration'). Filtering is applied client-side.",
+                  "Filter by workflow status name client-side (fallback when workflowStatusId not provided). E.g. 'Submitted'. Only applied to fetched page(s).",
               },
               updatedSince: {
                 type: "string",
                 description:
-                  "Return ideas updated at or after this ISO 8601 timestamp (e.g., '2026-05-03T00:00:00Z'). Use for date-windowed fetches.",
+                  "Return ideas updated at or after this ISO 8601 timestamp (e.g., '2026-05-03T00:00:00Z'). Triggers automatic pagination — fetches pages until a full page predates the cutoff or 20 pages are scanned.",
               },
               projectId: {
                 type: "string",
                 description:
                   "Aha! project ID to scope results. Overrides AHA_PROJECT_ID env var if provided.",
+              },
+              maxPages: {
+                type: "number",
+                description:
+                  "Max pages to scan when updatedSince is set (default 50, hard cap 100). Each page = 20 ideas. Increase if results seem incomplete.",
               },
             },
             required: [],

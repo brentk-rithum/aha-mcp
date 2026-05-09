@@ -9,6 +9,7 @@ import {
   RequirementResponse,
   PageResponse,
   SearchResponse,
+  Idea,
   IdeaAttributes,
   SearchIdeasResponse,
   GetIdeaResponse,
@@ -207,30 +208,89 @@ export class Handlers {
   }
 
   async handleSearchIdeas(request: any) {
-    const { query, workflowStatus, updatedSince, projectId: paramProjectId } = request.params.arguments as {
+    const {
+      query,
+      workflowStatus,
+      workflowStatusId,
+      updatedSince,
+      projectId: paramProjectId,
+      maxPages = 50,
+    } = request.params.arguments as {
       query?: string;
       workflowStatus?: string;
+      workflowStatusId?: string | string[];
       updatedSince?: string;
       projectId?: string;
+      maxPages?: number;
     };
 
     const projectId = paramProjectId ?? this.projectId;
 
+    // Normalize workflowStatusId to array for API
+    const statusIds = workflowStatusId
+      ? Array.isArray(workflowStatusId)
+        ? workflowStatusId
+        : [workflowStatusId]
+      : undefined;
+
     try {
+      if (updatedSince) {
+        // Paginate up to MAX_PAGES. No early exit — sort order unknown so
+        // matching ideas may appear on any page.
+        const since = new Date(updatedSince);
+        const MAX_PAGES = Math.min(maxPages, 100); // hard cap 100 pages
+        let allMatches: Idea[] = [];
+        let page = 1;
+        let isLastPage = false;
+
+        while (page <= MAX_PAGES && !isLastPage) {
+          const data = await this.client.request<SearchIdeasResponse>(
+            searchIdeasQuery,
+            { query, projectId, workflowStatusId: statusIds, page }
+          );
+
+          const pageMatches = data.ideas.nodes.filter(
+            (idea) => new Date(idea.updatedAt) >= since
+          );
+
+          allMatches = [...allMatches, ...pageMatches];
+          isLastPage = data.ideas.isLastPage;
+          page++;
+        }
+
+        // Client-side status name filter (when workflowStatusId not provided)
+        let ideas = allMatches;
+        if (workflowStatus && !statusIds) {
+          const statusLower = workflowStatus.toLowerCase();
+          ideas = ideas.filter(
+            (idea) => idea.workflowStatus?.name?.toLowerCase() === statusLower
+          );
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                { nodes: ideas, totalCount: ideas.length, pagesScanned: page },
+                null,
+                2
+              ),
+            },
+          ],
+        };
+      }
+
+      // No updatedSince — single page fetch
       const data = await this.client.request<SearchIdeasResponse>(
         searchIdeasQuery,
-        { query, projectId }
+        { query, projectId, workflowStatusId: statusIds, page: 1 }
       );
 
       let ideas = data.ideas.nodes;
 
-      if (updatedSince) {
-        const since = new Date(updatedSince);
-        ideas = ideas.filter((idea) => new Date(idea.updatedAt) >= since);
-      }
-
-      // Client-side filter by workflow status name (API requires ID, we filter by name)
-      if (workflowStatus) {
+      // Client-side status name filter (when workflowStatusId not provided)
+      if (workflowStatus && !statusIds) {
         const statusLower = workflowStatus.toLowerCase();
         ideas = ideas.filter(
           (idea) => idea.workflowStatus?.name?.toLowerCase() === statusLower

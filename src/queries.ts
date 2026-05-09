@@ -57,8 +57,8 @@ export const searchDocumentsQuery = `
 `;
 
 export const searchIdeasQuery = `
-  query SearchIdeas($query: String, $projectId: ID) {
-    ideas(filters: { query: $query, projectId: $projectId }) {
+  query SearchIdeas($query: String, $projectId: ID, $workflowStatusId: [ID!], $page: Int) {
+    ideas(filters: { query: $query, projectId: $projectId, workflowStatusId: $workflowStatusId }, page: $page) {
       nodes {
         id
         referenceNum
