@@ -71,7 +71,7 @@ export const searchIdeasQuery = `
         updatedAt
         project { name referencePrefix }
         tags { name }
-        customFieldValues { key value }
+        customFieldValues { key name value }
       }
       currentPage
       totalCount
@@ -117,7 +117,7 @@ export const updateIdeaMutation = `
         name
         workflowStatus { name }
         tags { name }
-        customFieldValues { key value }
+        customFieldValues { key name value }
       }
       errors { message }
     }

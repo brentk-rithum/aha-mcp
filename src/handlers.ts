@@ -364,7 +364,7 @@ export class Handlers {
       ideaRef?: string;
     };
 
-    const ref = ideaRef ?? "IDEA-I-1";
+    const ref = ideaRef ?? "IDEA-I-5623";
 
     try {
       const data = await this.client.request<GetIdeaPortalFieldsResponse>(
