@@ -69,7 +69,6 @@ export const searchIdeasQuery = `
         votes
         createdAt
         updatedAt
-        createdBy { email }
         project { name referencePrefix }
         tags { name }
         customFieldValues { key value }
@@ -94,7 +93,6 @@ export const getIdeaQuery = `
       votes
       createdAt
       updatedAt
-      createdBy { email }
       project { id name referencePrefix }
       tags { name }
       customFieldValues { key value }
@@ -122,7 +120,7 @@ export const getProjectIdeaFieldsQuery = `
   query GetProjectIdeaFields($projectId: ID!) {
     project(id: $projectId) {
       name
-      ideaCustomFields {
+      customFields {
         key
         name
         fieldType
