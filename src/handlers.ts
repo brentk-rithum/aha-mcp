@@ -303,16 +303,25 @@ export class Handlers {
   }
 
   async handleUpdateIdea(request: any) {
-    const { id, fields } = request.params.arguments as {
+    let { id, fields } = request.params.arguments as {
       id: string;
-      fields: IdeaAttributes;
+      fields: IdeaAttributes | string;
     };
 
     if (!id) {
       throw new McpError(ErrorCode.InvalidParams, "Idea ID is required");
     }
 
-    if (!fields || Object.keys(fields).length === 0) {
+    // Guard: fields may arrive as JSON string depending on MCP client serialization
+    if (typeof fields === "string") {
+      try {
+        fields = JSON.parse(fields) as IdeaAttributes;
+      } catch {
+        throw new McpError(ErrorCode.InvalidParams, "fields must be a valid JSON object");
+      }
+    }
+
+    if (!fields || Object.keys(fields as object).length === 0) {
       throw new McpError(
         ErrorCode.InvalidParams,
         "At least one field to update is required"
@@ -322,7 +331,7 @@ export class Handlers {
     try {
       const data = await this.client.request<UpdateIdeaResponse>(
         updateIdeaMutation,
-        { id, idea: fields }
+        { id, attributes: fields }
       );
 
       if (data.updateIdea.errors.length > 0) {
@@ -330,7 +339,7 @@ export class Handlers {
           content: [
             {
               type: "text",
-              text: `Update failed: ${data.updateIdea.errors.map((e) => e.message).join(", ")}`,
+              text: `Update failed: ${JSON.stringify(data.updateIdea.errors)}`,
             },
           ],
         };

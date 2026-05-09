@@ -121,8 +121,8 @@ export const getIdeaQuery = `
 `;
 
 export const updateIdeaMutation = `
-  mutation UpdateIdea($id: ID!, $idea: IdeaAttributes!) {
-    updateIdea(id: $id, idea: $idea) {
+  mutation UpdateIdea($id: ID!, $attributes: IdeaAttributes!) {
+    updateIdea(id: $id, attributes: $attributes) {
       idea {
         id
         referenceNum
@@ -131,7 +131,7 @@ export const updateIdeaMutation = `
         tags { name }
         customFieldValues { key value }
       }
-      errors { message }
+      errors { attributes }
     }
   }
 `;

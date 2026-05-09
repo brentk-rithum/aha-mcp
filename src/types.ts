@@ -149,7 +149,7 @@ export interface GetIdeaResponse {
 export interface UpdateIdeaResponse {
   updateIdea: {
     idea: Pick<Idea, "id" | "referenceNum" | "name" | "workflowStatus" | "tags" | "customFieldValues"> | null;
-    errors: Array<{ message: string }>;
+    errors: Array<{ attributes: string[] }>;
   };
 }
 
