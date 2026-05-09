@@ -67,6 +67,12 @@ export interface IdeaProject {
   referencePrefix: string;
 }
 
+export interface IdeaUser {
+  id: string;
+  name: string;
+  email: string | null;
+}
+
 export interface IdeaTag {
   name: string;
 }
@@ -92,6 +98,7 @@ export interface Idea {
   updatedAt: string;
   resourceUrl: string;
   project: IdeaProject;
+  assignedToUser: IdeaUser | null;
   tags: IdeaTag[];
   ideaCategories: IdeaCategory[];
   customFieldValues: CustomFieldValue[];

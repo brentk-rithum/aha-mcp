@@ -70,6 +70,7 @@ export const searchIdeasQuery = `
         createdAt
         updatedAt
         project { name referencePrefix }
+        assignedToUser { id name email }
         tags { name }
         ideaCategories { name }
         customFieldValues { key value }
@@ -95,6 +96,7 @@ export const getIdeaQuery = `
       createdAt
       updatedAt
       project { id name referencePrefix }
+      assignedToUser { id name email }
       tags { name }
       ideaCategories { name }
       customFieldValues { key value }
