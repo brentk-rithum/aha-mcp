@@ -69,7 +69,13 @@ export interface IdeaProject {
 
 export interface IdeaUser {
   id: string;
-  name: string;
+  name: string | null;
+  email: string | null;
+}
+
+export interface IdeaContributor {
+  id: string;
+  name: string | null;
   email: string | null;
 }
 
@@ -98,6 +104,7 @@ export interface Idea {
   updatedAt: string;
   resourceUrl: string;
   project: IdeaProject;
+  contributorship: IdeaContributor | null;
   assignedToUser: IdeaUser | null;
   tags: IdeaTag[];
   ideaCategories: IdeaCategory[];
