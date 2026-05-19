@@ -41,3 +41,32 @@
 | `AHA_API_TOKEN` | Yes | Bearer token for Aha! API |
 | `AHA_DOMAIN` | Yes | Subdomain (e.g. `mycompany` for mycompany.aha.io) |
 | `AHA_PROJECT_ID` | No | Default project scope for idea tools |
+
+## Execution rules - mandatory
+
+### Before writing any code
+Ask clarifying questions until 95% confident in requirements. Do not write
+a single line of code until the plan is confirmed. If requirements shift
+mid-session, stop and re-confirm before continuing.
+
+### Context discipline
+Only read files directly relevant to the current task. Do not load entire
+directories. Break large problems into focused steps. If context hits 60%,
+run /compact with explicit retain args (e.g., /compact retain schema,
+failing tests, API decisions). Switch tasks with /clear, not /compact.
+
+### Todo lists and verification gates
+Maintain a todo list for every multi-step task. Do not mark a step complete
+until it is verified:
+- UI changes: take a screenshot and confirm it matches the spec
+- API/backend: hit the endpoint and show the response
+- Do not advance to the next step until 95% confident the current one is done
+
+### Ultrathink trigger
+For architecture decisions, complex bugs, or after 2+ failed attempts at
+the same problem - use ultrathink. Do not use it for routine tasks.
+
+### Challenging outputs
+If an output is just okay, push for a better version before moving on.
+Once a better approach is found, update sdlc/lessons.md so it is not
+forgotten.
